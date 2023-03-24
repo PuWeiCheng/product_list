@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .tittle {
+            margin: auto;
+            max-width: 1200px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .tittle h1 {
+            text-align: center;
+        }
+        .containers{
+            margin: auto;            
+            max-width: 960px;
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            margin: auto;
+            max-width: 960px;
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0 10px;
+        }
+        .row{
+            padding: auto;
+        }
+        .btns{
+            background-color: lightblue;
+            color: white;
+            border-radius: 5px;
+            width: 150px;
+        }
+        .btns:hover{
+            background-color: white;
+            color: lightblue;
+        }
+        /* RWD設置 */
+        @media screen and (min-width: 768px){
+            .row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- 標題 -->
+    <div class="tittle">
+        <h1>產品列表</h1>
+    </div>
+    <!-- FORM表單 -->
+    <div class="containers">
+        <form id="search" class="row">
+            <div class="shop_select">
+                <select class="form-select" id="type">
+                    <option value="all">all</option>
+                    <option value="3C">3C</option>
+                    <option value="飲料">飲料</option>
+                    <option value="食品">食品</option>
+                </select>
+            </div>
+            <div class="price_tittle">
+                <label>價格範圍:</label>
+            </div>
+            <div class="price_low">
+                <input type="text" class="form-control" placeholder="最低價" id="low_price" value="0">
+            </div>
+            <div class="price_tall">
+                <input type="text" class="form-control" placeholder="最高價" id="tall_price">
+            </div>
+
+            <div class="amount_tittle">
+                <label>數量:</label>
+            </div>
+
+            <div class="price_amount">
+                <input type="text" class="form-amount" placeholder="空白或0" id="amount">
+            </div>
+
+            <div class="name_search">
+                <input type="text" class="form-search" placeholder="搜尋" id="form_search">
+            </div>
+        </form>
+        <!-- 按鈕 -->
+        <button id="btn" class="btns">查詢</button>
+    </div>
+
+    <!-- 表格的層 -->
+    <div class="container" id="mytable"></div>
+
+
+    <!-- INPUT JSON -->
+    <script type="module">
+        import { product } from './product.js'
+        // console.log(Object.values(product));
+
+
+        // 主函式呼叫function
+        window.onload = function () {
+            buildTable(product);
+        }
+        // 按鈕事件
+        let btn = document.getElementById("btn");
+        btn.addEventListener('click', () => { buildTable(product); });
+
+        // 副函示定義
+        function buildTable(data) {
+            var table = document.getElementById('mytable');
+            table.innerText = "";
+            let newArr;
+            let low_price = document.getElementById('low_price').value;
+            let tall_price = document.getElementById('tall_price').value;
+            if (low_price == "") { low_price = 0; }
+            if (tall_price == "") { tall_price = 999999; }
+
+            // 分類選擇
+            if (document.querySelector("#type").value == "all") {
+                newArr = data.filter(function (inutile) {
+                    return inutile;
+                });
+            }
+            else {
+                newArr = data.filter(function (inutile) {
+                    return inutile.ProductType == document.querySelector("#type").value;
+                });
+            }
+            // 價格輸入
+            newArr = newArr.filter(function (inutile) {
+                return inutile.Price >= low_price;
+            });
+
+            newArr = newArr.filter(function (inutile) {
+                return inutile.Price <= tall_price;
+            });
+
+            // 數量為0或all
+            if (document.querySelector("#amount").value == "") {
+                newArr = newArr.filter(function (inutile) {
+                    return inutile;
+                });
+            }
+            else{
+                newArr = newArr.filter(function (inutile) {
+                    return inutile.Amount == 0 ;
+                });
+            }
+
+            // 查詢
+            if (document.querySelector("#form_search").value == "") {
+                newArr = newArr.filter(function (inutile) {
+                    return inutile;
+                });
+            }
+            else {
+                newArr = newArr.filter(function (inutile) {
+                    return inutile.ProductName == document.querySelector("#form_search").value;
+                });
+            }
+
+            // for迴圈寫入卡片
+            for (var i = 0; i < newArr.length; i++) {
+                var row = `<div >
+                            <img src="https://picsum.photos/300/200/?random=10">
+							<p>編號：${newArr[i].ProductNumber}</p>
+							<p>名稱：${newArr[i].ProductName}</p>
+							<p>數量：${newArr[i].Amount}</p>
+                            <p>價格：${newArr[i].Price}</p>
+                            <p>類型：${newArr[i].ProductType}</p>
+                        </div>`
+                table.innerHTML += row
+            }
+        }
+
+
+
+
+
+
+    </script>
+
+</body>
+
+</html>
